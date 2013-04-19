@@ -12,11 +12,6 @@ This needs node.js to work, so install that first.  You can find it [here] [1]. 
 Then, you will need to install the module dependencies.  Currently that is only [restler], *"an HTTP client library for node.js"*.  After installing node.js, run this command to do it:
 
     npm install restler
-	
-## How to Run ##
-For now, this is as simple as:
-
-    node coinbase-bot.js
 
 ### Coinbase API key ###
 
@@ -25,6 +20,11 @@ You'll have to enable your Coinbase [API key] for this to work; you will of cour
 <span style="color:red">**WARNING:**</span> If you clone this repo so you can modify it, BE CAREFUL and DO NOT UPLOAD your config file with your API key in it!  This would allow someone to steal the Bitcoins from your Coinbase wallet!  
 
 I personally recommend disabling your API key when you're not using this application as an extra safety measure.
+
+## How to Run ##
+For now, this is as simple as:
+
+    node coinbase-bot.js
 
 ## Origins ##
 Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated functionality from [FernandoEscher]'s [fork of same].
