@@ -1,7 +1,11 @@
 // https://github.com/Wingman4l7/coinbase-bot
  
-var sys =  require('util');
-var rest = require('restler');
+var sys =    require('util');
+var rest =   require('restler');
+var config = require('./config');
+
+var baseURL = 'https://coinbase.com/api/v1/';
+var API_URL = '?api_key=' + config.apiKey;
  
 function onComplete(data, res) {
 	console.log(new Date().toString());
@@ -27,7 +31,7 @@ function buy() {
 
 		if(data.amount <= config.threshold) {
 			var jsonData = { qty: config.qty };
-			rest.postJson('https://coinbase.com/api/v1/buys?api_key=' + config.apiKey, jsonData).once('complete', onComplete);
+			rest.postJson(baseURL + 'buys' + API_URL, jsonData).once('complete', onComplete);
 		}
 		else {
 			setTimeout(buy, config.timeout);

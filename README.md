@@ -28,16 +28,15 @@ For now, this is as simple as:
 
 ## How to Use ##
 *If you can't figure it out on your own, never fear, I'll fill this in soon!*
+*Notes:* If you want to just buy BTC and don't care to use the threshold to buy under/at a certain price, just set the theshold config value high enough so it won't matter.  The "min" and "max" values in the config aren't currently used anywhere.
 
-## Origins ##
-Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated functionality from [FernandoEscher]'s [fork of same].
-
-I used the JSON config file technique from [martindale]'s [coinbase-trader], and I'll probably be using other bits from it in the near future.
+## Origins & Credit Due ##
+Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated functionality from [FernandoEscher]'s [fork of same].  I used the JSON config file technique from [martindale]'s [coinbase-trader], and I'll probably be using other bits from it in the near future.  Lots of good stuff in [otakup0pe]'s [nodecoinbase] so there's probably going to be pieces from that in here as well.
 
 ## Donations ##
 Like this script?  You can send Bitcoin donations to: `1F7kfMNUNQy8e52RHnQAWYXeaYfzFqHJAZ`
 
-As a frame of reference, $1 USD is currently: <img src="http://btcticker.appspot.com/mtgox/1.00usd.png">
+$1 USD is currently ˜ <img src="http://btcticker.appspot.com/mtgox/1.00usd.png">
 
 [Bitcoin]: http://bitcoin.org/
 [Coinbase]: https://coinbase.com/
@@ -50,3 +49,5 @@ As a frame of reference, $1 USD is currently: <img src="http://btcticker.appspot
 [fork of same]: https://gist.github.com/FernandoEscher/5103601
 [martindale]: https://github.com/martindale
 [coinbase-trader]: https://github.com/martindale/coinbase-trader
+[otakup0pe]: https://github.com/otakup0pe
+[nodecoinbase]: https://github.com/otakup0pe/nodecoinbase
