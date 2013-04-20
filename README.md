@@ -28,6 +28,7 @@ For now, this is as simple as:
 
 ## How to Use ##
 *If you can't figure it out on your own, never fear, I'll fill this in soon!*
+
 *Notes:* If you want to just buy BTC and don't care to use the threshold to buy under/at a certain price, just set the theshold config value high enough so it won't matter.  The "min" and "max" values in the config aren't currently used anywhere.
 
 ## Origins & Credit Due ##
@@ -36,7 +37,7 @@ Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated functionality f
 ## Donations ##
 Like this script?  You can send Bitcoin donations to: `1F7kfMNUNQy8e52RHnQAWYXeaYfzFqHJAZ`
 
-$1 USD is currently ˜ <img src="http://btcticker.appspot.com/mtgox/1.00usd.png">
+*Quick reference:* $1 USD is currently: <img src="http://btcticker.appspot.com/mtgox/1.00usd.png">
 
 [Bitcoin]: http://bitcoin.org/
 [Coinbase]: https://coinbase.com/
