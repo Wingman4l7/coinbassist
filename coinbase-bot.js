@@ -6,6 +6,20 @@ var config = require('./config');
 
 var baseURL = 'https://coinbase.com/api/v1/';
 var API_URL = '?api_key=' + config.apiKey;
+
+// this works but is currently not user-accessible functionality
+function getYourBalance() {
+	rest.get(baseURL + 'account/balance' + API_URL).once('complete', function(data, res) {
+		console.log("Account Balance: %s %s", data.amount, data.currency);
+	});
+}
+
+// this works but is currently not user-accessible functionality
+function makeNewAddy() {
+	rest.post(baseURL + 'account/generate_receive_address' + API_URL).once('complete', function(data, res) {
+		console.log("New Receiving Address: %s", data.address);
+	});
+}
  
 function onComplete(data, res) {
 	console.log(new Date().toString());
@@ -21,12 +35,13 @@ function onComplete(data, res) {
 	}
 	else {
 		console.log("SUCCESS! Bought %s BTC!", config.qty);
+		// TODO: append "@ XYZ ea." to output
 	}
 };
  
 function buy() {
 	// check the price until it reaches the desired value
-	rest.get('https://coinbase.com/api/v1/prices/buy').on('complete', function(data){
+	rest.get(baseURL + 'prices/buy').on('complete', function(data){
 		console.log("Current price: " + data.amount + ". Buy-at price: " + config.threshold)
 
 		if(data.amount <= config.threshold) {
