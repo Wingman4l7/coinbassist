@@ -2,7 +2,7 @@ coinbase-bot
 ============
 
 ## About ##
-This is a node.js application to automatically buy/sell [Bitcoin] (BTC) via [Coinbase].
+This is a node.js application to automatically buy/sell [Bitcoin] (BTC) via [Coinbase].  Soon you will also be able to use it to check your balance, generate a new address to receive BTC at, and more!
 
 ## How to Install ##
 
@@ -27,12 +27,22 @@ For now, this is as simple as:
 	node coinbase-bot.js
 
 ## How to Use ##
-*If you can't figure it out on your own, never fear, I'll fill this in soon!*
+*Below commands aren't enabled yet -- soon!*
+<del>You are provided with a command prompt.  Current available commands are:</del>
+
+	help: gives a complete list of commands and what they do
+	quit / exit: does what it says on the tin
+	balance: shows your current account balance (in BTC)
+	getaddy: shows your current receive address
+	newaddy: generates & displays a new receive address
 
 *Notes:* If you want to just buy BTC and don't care to use the threshold to buy under/at a certain price, just set the theshold config value high enough so it won't matter.  The "min" and "max" values in the config aren't currently used anywhere.
 
 ## Origins & Credit Due ##
-Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated functionality from [FernandoEscher]'s [fork of same].  I used the JSON config file technique from [martindale]'s [coinbase-trader], and I'll probably be using other bits from it in the near future.  Lots of good stuff in [otakup0pe]'s [nodecoinbase] so there's probably going to be pieces from that in here as well.
+Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated threshold functionality from [FernandoEscher]'s [fork of same].  I used the JSON config file technique from [martindale]'s [coinbase-trader], and I'll probably be using other bits from it in the near future.  Lots of good stuff in [otakup0pe]'s [nodecoinbase] too, so there's probably going to be pieces from that in here as well.
+
+## License ##
+I haven't bothered to formally declare which license this is going to be under, but it's obviously open-source, and it will probably be some flavor of [Creative Commons], or maybe [GPL].
 
 ## Donations ##
 Like this script?  You can send Bitcoin donations to: `1F7kfMNUNQy8e52RHnQAWYXeaYfzFqHJAZ`
@@ -52,3 +62,5 @@ Like this script?  You can send Bitcoin donations to: `1F7kfMNUNQy8e52RHnQAWYXea
 [coinbase-trader]: https://github.com/martindale/coinbase-trader
 [otakup0pe]: https://github.com/otakup0pe
 [nodecoinbase]: https://github.com/otakup0pe/nodecoinbase
+[Creative Commons]: http://creativecommons.org/licenses/
+[GPL]: http://www.gnu.org/licenses/licenses.html
