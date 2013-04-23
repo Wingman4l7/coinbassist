@@ -1,8 +1,8 @@
 // https://github.com/Wingman4l7/coinbase-bot
  
-var sys =    require('util');
-var rest =   require('restler');
-var config = require('./config');
+var rest =   require('restler')
+  , repl =   require('repl')
+  , config = require('./config');
 
 var baseURL = 'https://coinbase.com/api/v1/';
 var API_URL = '?api_key=' + config.apiKey;
