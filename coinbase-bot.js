@@ -17,44 +17,78 @@ var red    = '\u001b[31m'
   , bold   = '\u001b[1m'
   , reset  = '\u001b[0m';
 
-// this works but is currently not user-accessible functionality
-function getYourBalance() {
+function getBalance(callback) {
 	rest.get(baseURL + 'account/balance' + API_URL).once('complete', function(data, res) {
 		// parseFloat() chops off any trailing zeroes
-		console.log(cyan + "Account Balance: " + reset + "%s %s", parseFloat(data.amount), data.currency);
+		callback(cyan + "Account Balance: " + reset + parseFloat(data.amount) + " " + data.currency);
 	});
 }
 
-// this works but is currently not user-accessible functionality
- function getAddy() {
+function getAddy(callback) {
 	rest.get(baseURL + 'account/receive_address' + API_URL).once('complete', function(data, res) {
-		console.log(cyan + "Current Receiving Address: " + reset + "%s", data.address);
+		callback(cyan + "Current Receiving Address: " + reset + data.address);
 	});
 }
 
-// this works but is currently not user-accessible functionality
-function makeNewAddy() {
+function newAddy(callback) {
 	rest.post(baseURL + 'account/generate_receive_address' + API_URL).once('complete', function(data, res) {
-		console.log(cyan + "New Receiving Address: " + reset + "%s", data.address);
+		callback(cyan + "New Receiving Address: " + reset + data.address);
 	});
 }
  
-// this works but is currently not user-accessible functionality
 function exitMsg() {
 	console.log(green + "Thanks for using Coinbase Bot!" + reset);
 	process.exit();
 }
 
-// this works but is currently not user-accessible functionality	
-function displayHelp() {
-	console.log(cyan + 'Commands:\n' + reset +
-				'\n	' + "'balance': shows your current account balance (in BTC)" + 
-				'\n	' + "'quit', 'exit': does what it says on the tin" + 
-				'\n	' + "'getaddy': shows your current receive address" +
-				'\n	' + "'newaddy': generates & displays a new receive address"				
+function displayHelp(callback) {
+	callback(cyan + 'Commands:' + reset +
+			'\n	' + yellow + "balance" + reset + ": shows your current account balance (in BTC)" + 
+			'\n	' + yellow +  "quit / exit" + reset + ": does what it says on the tin" + 
+			'\n	' + yellow +  "getaddy" + reset + ": shows your current receive address" +
+			'\n	' + yellow +  "newaddy" + reset + ": generates & displays a new receive address"
 	);
 }
- 
+
+function displayStart() {
+	console.log(green + 'Coinbase Bot:' + reset + 
+						'\nA command-line tool for Coinbase.' + '\n');
+	console.log(cyan + "Type '" + yellow + 'help' + cyan + "' for a complete list of commands." + reset);
+}
+
+function parseCmds(cmd, context, filename, callback) {
+	var tokens = cmd.toLowerCase().replace('(','').replace(')','').replace('\n', '').split(' ');
+		
+	switch (tokens[0]) {
+		case 'help':
+			displayHelp(callback);
+		break;
+		case 'balance':
+			getBalance(callback);
+		break;
+		case 'getaddy':
+			getAddy(callback);
+		break;
+		case 'newaddy':
+			newAddy(callback);
+		break;
+		case 'quit': case 'exit':
+			exitMsg();
+		break;
+		default:
+			callback(red + 'unknown command: ' + reset + '"' + tokens[0] +'"');
+		break;
+	}
+}
+
+displayStart();
+
+repl.start({
+	prompt: 'coinbase-bot> ',
+	eval : parseCmds
+});
+
+// this works but is currently not user-accessible functionality 
 function onComplete(data, res) {
 	console.log(new Date().toString());
 	if (!data.success) {
@@ -73,6 +107,7 @@ function onComplete(data, res) {
 	}
 };
  
+// this works but is currently not user-accessible functionality
 function buy() {
 	// check the price until it reaches the desired value
 	rest.get(baseURL + 'prices/buy').on('complete', function(data){
@@ -89,4 +124,4 @@ function buy() {
 	});
 }
 
-buy();
+// buy();
