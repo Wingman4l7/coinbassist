@@ -4,6 +4,7 @@ coinbase-bot
 ## About ##
 This is a node.js application which provides command-line access to [Coinbase]. You can:
 
+  - show current exchange rate
   - check your balance
   - show your current receive address  
   - generates & display a new receive address
@@ -38,6 +39,7 @@ For now, this is as simple as:
 You are provided with a command prompt.  Current available commands are:
 
 	help:    gives a complete list of commands and what they do
+	rate:    shows their current exchange rate (BTC to USD)
 	balance: shows your current account balance (in BTC)
 	getaddy: shows your current receive address
 	newaddy: generates & displays a new receive address

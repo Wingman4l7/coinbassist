@@ -1,7 +1,7 @@
 // https://github.com/Wingman4l7/coinbase-bot
  
-var rest =   require('restler')
-  , repl =   require('repl')
+var rest   = require('restler')
+  , repl   = require('repl')
   , config = require('./config');
 
 var baseURL = 'https://coinbase.com/api/v1/';
@@ -17,6 +17,16 @@ var red    = '\u001b[31m'
   , bold   = '\u001b[1m'
   , reset  = '\u001b[0m';
 
+// API supports other exchange rates but as Coinbase only 
+// currently does USD to BTC, no point in displaying them
+function getRate(callback) {
+	var market = { rates: {} };
+	rest.get(baseURL + 'currencies/exchange_rates').once('complete', function(data, res) {
+		market.rates = data;
+		callback(cyan + 'BTC to USD: ' + reset + market.rates.btc_to_usd);
+	});
+}  
+  
 function getBalance(callback) {
 	rest.get(baseURL + 'account/balance' + API_URL).once('complete', function(data, res) {
 		// parseFloat() chops off any trailing zeroes
@@ -44,9 +54,10 @@ function exitMsg() {
 function displayHelp(callback) {
 	callback(cyan + 'Commands:' + reset +
 			'\n	' + yellow + "balance" + reset + ": shows your current account balance (in BTC)" + 
-			'\n	' + yellow +  "quit / exit" + reset + ": does what it says on the tin" + 
-			'\n	' + yellow +  "getaddy" + reset + ": shows your current receive address" +
-			'\n	' + yellow +  "newaddy" + reset + ": generates & displays a new receive address"
+			'\n	' + yellow + "rate" + reset + ": shows their current exchange rate (BTC to USD)" + 
+			'\n	' + yellow + "getaddy" + reset + ": shows your current receive address" +
+			'\n	' + yellow + "newaddy" + reset + ": generates & displays a new receive address" + 
+			'\n	' + yellow + "quit / exit" + reset + ": does what it says on the tin"
 	);
 }
 
@@ -62,6 +73,9 @@ function parseCmds(cmd, context, filename, callback) {
 	switch (tokens[0]) {
 		case 'help':
 			displayHelp(callback);
+		break;
+		case 'rate':
+			getRate(callback);
 		break;
 		case 'balance':
 			getBalance(callback);
