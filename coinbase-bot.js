@@ -22,29 +22,48 @@ var red    = '\u001b[31m'
 function getRate(callback) {
 	var market = { rates: {} };
 	rest.get(baseURL + 'currencies/exchange_rates').once('complete', function(data, res) {
-		market.rates = data;
-		callback(cyan + 'BTC to USD: ' + reset + market.rates.btc_to_usd);
+		if(typeof market.rates.btc_to_usd == "undefined") {
+			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+		}
+		else {
+			market.rates = data;
+			callback(cyan + 'BTC to USD: ' + reset + market.rates.btc_to_usd);
+		}		
 	});
-}  
+} 
   
 function getBalance(callback) {
 	rest.get(baseURL + 'account/balance' + API_URL).once('complete', function(data, res) {
-		// parseFloat() chops off any trailing zeroes
-		callback(cyan + "Account Balance: " + reset + parseFloat(data.amount) + " " + data.currency);
+		if(typeof data.currency == "undefined") { // data.amount would return "NaN"
+			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+		}
+		else { // parseFloat() chops off any trailing zeroes
+			callback(cyan + "Account Balance: " + reset + parseFloat(data.amount) + " " + data.currency);
+		}		
 	});
 }
 
 function getAddy(callback) {
 	rest.get(baseURL + 'account/receive_address' + API_URL).once('complete', function(data, res) {
-		callback(cyan + "Current Receiving Address: " + reset + data.address);
+		if(typeof data.address == "undefined") {
+			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+		}
+		else {
+			callback(cyan + "Current Receiving Address: " + reset + data.address);
+		}
 	});
 }
 
 function newAddy(callback) {
 	rest.post(baseURL + 'account/generate_receive_address' + API_URL).once('complete', function(data, res) {
-		callback(cyan + "New Receiving Address: " + reset + data.address);
+		if(typeof data.address == "undefined") {
+			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+		}
+		else {
+			callback(cyan + "New Receiving Address: " + reset + data.address);
+		}
 	});
-}
+} 
  
 function exitMsg() {
 	console.log(green + "Thanks for using Coinbase Bot!" + reset);
