@@ -8,6 +8,7 @@ This is a node.js application which provides command-line access to [Coinbase]. 
   - check your balance
   - show your current receive address  
   - generates & display a new receive address
+  - shows buy or sell price (incl. fees) for a given amount of BTC
 
 More to come!
 
@@ -43,6 +44,8 @@ You are provided with a command prompt.  Current available commands are:
 	balance: shows your current account balance (in BTC)
 	getaddy: shows your current receive address
 	newaddy: generates & displays a new receive address
+	buyprice:  shows buy price incl. fees (use: buyprice #)
+	sellprice: shows sell price incl. fees (use: sellprice #)
     quit / exit: does what it says on the tin
 
 *The automatic "buy" functionality is currently disabled while I work it into the new prompt interface.*

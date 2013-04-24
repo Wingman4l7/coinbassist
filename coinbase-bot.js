@@ -64,6 +64,30 @@ function newAddy(callback) {
 		}
 	});
 } 
+
+function buyPrice(qty, callback) {
+	var jsonData = { 'qty': qty };
+	rest.json(baseURL + 'prices/buy', jsonData).once('complete', function(data, res) {
+		if(typeof data.currency == "undefined") { // data.amount would return "NaN"
+			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+		}
+		else { 
+			callback(cyan + "Buy Price: " + reset + data.amount + " " + data.currency);
+		}
+	});
+}
+
+function sellPrice(qty, callback) {
+	var jsonData = { 'qty': qty };
+	rest.json(baseURL + 'prices/sell', jsonData).once('complete', function(data, res) {
+		if(typeof data.currency == "undefined") { // data.amount would return "NaN"
+			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+		}
+		else { 
+			callback(cyan + "Sell Price: " + reset + data.amount + " " + data.currency);
+		}
+	});
+}
  
 function exitMsg() {
 	console.log(green + "Thanks for using Coinbase Bot!" + reset);
@@ -76,6 +100,8 @@ function displayHelp(callback) {
 			'\n	' + yellow + "rate" + reset + ": shows their current exchange rate (BTC to USD)" + 
 			'\n	' + yellow + "getaddy" + reset + ": shows your current receive address" +
 			'\n	' + yellow + "newaddy" + reset + ": generates & displays a new receive address" + 
+			'\n	' + yellow + "buyprice"  + reset + ": shows buy price incl. fees (use: buyprice #)" + 
+			'\n	' + yellow + "sellprice" + reset + ": shows sell price incl. fees (use: sellprice #)" + 
 			'\n	' + yellow + "quit / exit" + reset + ": does what it says on the tin"
 	);
 }
@@ -104,6 +130,12 @@ function parseCmds(cmd, context, filename, callback) {
 		break;
 		case 'newaddy':
 			newAddy(callback);
+		break;
+		case 'buyprice':
+			buyPrice(tokens[1], callback);  // assumes good input
+		break;
+		case 'sellprice':
+			sellPrice(tokens[1], callback); // assumes good input			
 		break;
 		case 'quit': case 'exit':
 			exitMsg();
