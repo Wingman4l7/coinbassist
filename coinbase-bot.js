@@ -1,7 +1,8 @@
 // https://github.com/Wingman4l7/coinbase-bot
  
-var rest   = require('restler')
-  , repl   = require('repl')
+var rest   = require('restler') // for HTTP requests
+  , repl   = require('repl')    // for command-line interface
+  , fs     = require('fs')      // for logging
   , config = require('./config');
 
 var baseURL = 'https://coinbase.com/api/v1/';
@@ -17,75 +18,101 @@ var red    = '\u001b[31m'
   , bold   = '\u001b[1m'
   , reset  = '\u001b[0m';
 
+function writeToLog(str) {
+	if(config.logging) {
+		var bareStr = str.replace(/\u001b\[[0-9;]*m/g, "");  // strip coloring characters from string
+		var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''); // gives UTC
+		fs.appendFileSync(config.logfile, date + ": " + bareStr + '\n');
+	}
+}
+  
 // API supports other exchange rates but as Coinbase only 
 // currently does USD to BTC, no point in displaying them
 function getRate(callback) {
 	var market = { rates: {} };
+	var response;
 	rest.get(baseURL + 'currencies/exchange_rates').once('complete', function(data, res) {
 		if(typeof market.rates.btc_to_usd == "undefined") {
-			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+			response = red + "RATE QUERY FAILED -- TRY AGAIN" + reset;
 		}
 		else {
 			market.rates = data;
-			callback(cyan + 'BTC to USD: ' + reset + market.rates.btc_to_usd);
-		}		
+			response = cyan + 'BTC to USD: ' + reset + market.rates.btc_to_usd;
+		}
+		callback(response);
+		writeToLog(response);
 	});
-} 
-  
+}
+ 
 function getBalance(callback) {
+	var response;
 	rest.get(baseURL + 'account/balance' + API_URL).once('complete', function(data, res) {
 		if(typeof data.currency == "undefined") { // data.amount would return "NaN"
-			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+			response = red + "BALANCE QUERY FAILED -- TRY AGAIN" + reset;
 		}
 		else { // parseFloat() chops off any trailing zeroes
-			callback(cyan + "Account Balance: " + reset + parseFloat(data.amount) + " " + data.currency);
-		}		
+			response = cyan + "Account Balance: " + reset + parseFloat(data.amount) + " " + data.currency;
+		}
+		callback(response);
+		writeToLog(response);		
 	});
 }
 
 function getAddy(callback) {
+	var response;
 	rest.get(baseURL + 'account/receive_address' + API_URL).once('complete', function(data, res) {
 		if(typeof data.address == "undefined") {
-			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+			response = red + "ADDRESS QUERY FAILED -- TRY AGAIN" + reset;
 		}
 		else {
-			callback(cyan + "Current Receiving Address: " + reset + data.address);
+			response = cyan + "Current Receiving Address: " + reset + data.address;
 		}
+		callback(response);
+		writeToLog(response);
 	});
 }
 
 function newAddy(callback) {
+	var response;
 	rest.post(baseURL + 'account/generate_receive_address' + API_URL).once('complete', function(data, res) {
 		if(typeof data.address == "undefined") {
-			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+			response = red + "NEW ADDRESS REQUEST FAILED -- TRY AGAIN" + reset;
 		}
 		else {
-			callback(cyan + "New Receiving Address: " + reset + data.address);
+			response = cyan + "New Receiving Address: " + reset + data.address;	
 		}
+		callback(response);
+		writeToLog(response);
 	});
-} 
+}
 
 function buyPrice(qty, callback) {
+	var response;
 	var jsonData = { 'qty': qty };
 	rest.json(baseURL + 'prices/buy', jsonData).once('complete', function(data, res) {
 		if(typeof data.currency == "undefined") { // data.amount would return "NaN"
-			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+			response = red + "BUY PRICE QUERY FAILED -- TRY AGAIN" + reset;
 		}
 		else { 
-			callback(cyan + "Buy Price: " + reset + data.amount + " " + data.currency);
+			response = cyan + "Buy Price: " + reset + data.amount + " " + data.currency;
 		}
+		callback(response);
+		writeToLog(response);
 	});
 }
 
 function sellPrice(qty, callback) {
+	var response;
 	var jsonData = { 'qty': qty };
 	rest.json(baseURL + 'prices/sell', jsonData).once('complete', function(data, res) {
 		if(typeof data.currency == "undefined") { // data.amount would return "NaN"
-			callback(red + "QUERY FAILED -- TRY AGAIN" + reset);
+			response = red + "SELL PRICE QUERY FAILED -- TRY AGAIN" + reset;
 		}
 		else { 
-			callback(cyan + "Sell Price: " + reset + data.amount + " " + data.currency);
+			response = cyan + "Sell Price: " + reset + data.amount + " " + data.currency;
 		}
+		callback(response);
+		writeToLog(response);
 	});
 }
  
@@ -120,27 +147,35 @@ function parseCmds(cmd, context, filename, callback) {
 			displayHelp(callback);
 		break;
 		case 'rate':
+			writeToLog('rate');
 			getRate(callback);
 		break;
 		case 'balance':
+			writeToLog('balance');
 			getBalance(callback);
 		break;
 		case 'getaddy':
+			writeToLog('getaddy');
 			getAddy(callback);
 		break;
 		case 'newaddy':
+			writeToLog('newaddy');
 			newAddy(callback);
 		break;
 		case 'buyprice':
+			writeToLog('buyprice ' + tokens[1]);
 			buyPrice(tokens[1], callback);  // assumes good input
 		break;
 		case 'sellprice':
+			writeToLog('sellprice ' + tokens[1]);
 			sellPrice(tokens[1], callback); // assumes good input			
 		break;
 		case 'quit': case 'exit':
 			exitMsg();
 		break;
 		default:
+			writeToLog(tokens[0]);
+			writeToLog(red + 'unknown command: ' + reset + '"' + tokens[0] +'"');
 			callback(red + 'unknown command: ' + reset + '"' + tokens[0] +'"');
 		break;
 	}

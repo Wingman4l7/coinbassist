@@ -7,10 +7,10 @@ This is a node.js application which provides command-line access to [Coinbase]. 
   - show current exchange rate
   - check your balance
   - show your current receive address  
-  - generates & display a new receive address
-  - shows buy or sell price (incl. fees) for a given amount of BTC
+  - generate & display a new receive address
+  - show buy or sell price (incl. fees) for a given amount of BTC
 
-More to come!
+It will also optionally log all your actions to a text file.  More to come!
 
 You will also of course be able to automatically buy/sell [Bitcoin] (BTC).
 
@@ -37,6 +37,8 @@ For now, this is as simple as:
 	node coinbase-bot.js
 
 ## How to Use ##
+
+### Commands ###
 You are provided with a command prompt.  Current available commands are:
 
 	help:    gives a complete list of commands and what they do
@@ -49,8 +51,11 @@ You are provided with a command prompt.  Current available commands are:
     quit / exit: does what it says on the tin
 
 *The automatic "buy" functionality is currently disabled while I work it into the new prompt interface.*
-	
-*Notes:* If you want to just buy BTC and don't care to use the threshold to buy under/at a certain price, just set the theshold config value high enough so it won't matter.  The "min" and "max" values in the config aren't currently used anywhere.
+
+### Config File ###
+This is where you'll put the API key and set other options, like if you want logging on *(set to `true`)* or off *(set to `false`)*.
+
+If you want to just buy BTC and don't care to use the threshold to buy under/at a certain price, just set the theshold config value high enough so it won't matter.  The "min" and "max" values in the config aren't currently used anywhere.
 
 ## Origins & Credit Due ##
 Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated threshold functionality from [FernandoEscher]'s [fork of same].  I used the JSON config file and REPL-as-command-line from [martindale]'s [coinbase-trader], and I'll probably be using other bits from it in the near future.  Lots of good stuff in [otakup0pe]'s [nodecoinbase] too, so there's probably going to be pieces from that in here as well, eventually.
