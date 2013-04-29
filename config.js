@@ -1,7 +1,7 @@
 module.exports = {
     debug: false
   , logging: true // set to false to turn off
-  , logfile: 'coinbase-bot.log'
+  , logfile: 'coinbassist.log'
   , apiKey: 'insert Coinbase API key here'
   , timeout: 60000 // in milliseconds; 60k = 1 minute
   , min: 50  // in USD

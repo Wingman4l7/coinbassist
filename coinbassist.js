@@ -1,4 +1,4 @@
-// https://github.com/Wingman4l7/coinbase-bot
+// https://github.com/Wingman4l7/coinbassist
  
 var rest   = require('restler') // for HTTP requests
   , repl   = require('repl')    // for command-line interface
@@ -61,10 +61,10 @@ function getBalance(callback) {
 function getAddy(callback) {
 	var response;
 	rest.get(baseURL + 'account/receive_address' + API_URL).once('complete', function(data, res) {
-		if(typeof data.address == "undefined") {
+		if(typeof data.address == "undefined" || !data.success) {
 			response = red + "ADDRESS QUERY FAILED -- TRY AGAIN" + reset;
 		}
-		else {
+		if(data.success) {
 			response = cyan + "Current Receiving Address: " + reset + data.address;
 		}
 		callback(response);
@@ -86,38 +86,60 @@ function newAddy(callback) {
 	});
 }
 
-function buyPrice(qty, callback) {
+function buyPrice(args, callback) {
 	var response;
-	var jsonData = { 'qty': qty };
-	rest.json(baseURL + 'prices/buy', jsonData).once('complete', function(data, res) {
-		if(typeof data.currency == "undefined") { // data.amount would return "NaN"
-			response = red + "BUY PRICE QUERY FAILED -- TRY AGAIN" + reset;
-		}
-		else { 
-			response = cyan + "Buy Price: " + reset + data.amount + " " + data.currency;
-		}
-		callback(response);
+	if(typeof args[1] == "undefined" || isNaN(args[1])) {
+		response = red + "Please enter a quantity." + '\n' +
+				   cyan + "Example: " + reset + "buyprice " + yellow + "5" + reset;
 		writeToLog(response);
-	});
+		callback(response);
+	}
+	else {
+		var jsonData = { 'qty': args[1] };
+		rest.json(baseURL + 'prices/buy', jsonData).once('complete', function(data, res) {
+			if(typeof data.currency == "undefined") { // data.amount would return "NaN"
+				response = red + "BUY PRICE QUERY FAILED -- TRY AGAIN" + reset;
+			}
+			else { 
+				response = cyan + "Buy Price: " + reset + data.amount + " " + data.currency;
+			}
+			callback(response);
+			writeToLog(response);
+		});
+	}
 }
 
-function sellPrice(qty, callback) {
+function sellPrice(args, callback) {
 	var response;
-	var jsonData = { 'qty': qty };
-	rest.json(baseURL + 'prices/sell', jsonData).once('complete', function(data, res) {
-		if(typeof data.currency == "undefined") { // data.amount would return "NaN"
-			response = red + "SELL PRICE QUERY FAILED -- TRY AGAIN" + reset;
-		}
-		else { 
-			response = cyan + "Sell Price: " + reset + data.amount + " " + data.currency;
-		}
-		callback(response);
+		if(typeof args[1] == "undefined" || isNaN(args[1])) {
+		response = red + "Please enter a quantity." + '\n' +
+				   cyan + "Example: " + reset + "sellprice " + yellow + "5" + reset;
 		writeToLog(response);
-	});
+		callback(response);
+	}
+	else {
+		var jsonData = { 'qty': qty };
+		rest.json(baseURL + 'prices/sell', jsonData).once('complete', function(data, res) {
+			if(typeof data.currency == "undefined") { // data.amount would return "NaN"
+				response = red + "SELL PRICE QUERY FAILED -- TRY AGAIN" + reset;
+			}
+			else { 
+				response = cyan + "Sell Price: " + reset + data.amount + " " + data.currency;
+			}
+			callback(response);
+			writeToLog(response);
+		});
+	}
+}
+
+function unknownCMD(args, callback) {
+	writeToLog(red + 'unknown command: ' + reset + '"' + args[0] +'"');
+	  callback(red + 'unknown command: ' + reset + '"' + args[0] +'"' + '\n' +
+			   cyan + "Type '" + yellow + 'help' + cyan + "' for a complete list of commands." + reset);
 }
  
 function exitMsg() {
-	console.log(green + "Thanks for using Coinbase Bot!" + reset);
+	console.log(green + "Thanks for using coinbassist!" + reset);
 	process.exit();
 }
 
@@ -134,9 +156,9 @@ function displayHelp(callback) {
 }
 
 function displayStart() {
-	console.log(green + 'Coinbase Bot:' + reset + 
-						'\nA command-line tool for Coinbase.' + '\n');
-	console.log(cyan + "Type '" + yellow + 'help' + cyan + "' for a complete list of commands." + reset);
+	console.log(green + 'coinbassist: ' + reset +
+						'a command-line tool for Coinbase.' + '\n' +
+				cyan + "Type '" + yellow + 'help' + cyan + "' for a complete list of commands." + reset);
 }
 
 function parseCmds(cmd, context, filename, callback) {
@@ -164,64 +186,30 @@ function parseCmds(cmd, context, filename, callback) {
 		break;
 		case 'buyprice':
 			writeToLog('buyprice ' + tokens[1]);
-			buyPrice(tokens[1], callback);  // assumes good input
+			buyPrice(tokens, callback);
 		break;
 		case 'sellprice':
 			writeToLog('sellprice ' + tokens[1]);
-			sellPrice(tokens[1], callback); // assumes good input			
+			sellPrice(tokens, callback);
 		break;
 		case 'quit': case 'exit':
+			writeToLog('==================== EXIT ====================');
 			exitMsg();
 		break;
 		default:
 			writeToLog(tokens[0]);
-			writeToLog(red + 'unknown command: ' + reset + '"' + tokens[0] +'"');
-			callback(red + 'unknown command: ' + reset + '"' + tokens[0] +'"');
+			unknownCMD(tokens, callback);
 		break;
 	}
 }
 
-displayStart();
+function main() {
+	displayStart();
 
-repl.start({
-	prompt: 'coinbase-bot> ',
-	eval : parseCmds
-});
-
-// this works but is currently not user-accessible functionality 
-function onComplete(data, res) {
-	console.log(new Date().toString());
-	if (!data.success) {
-		//console.log(data.errors);
-		attemptCount++;
-		if(attemptCount%10 == 0) {  // only output every 10th attempt
-			console.log(new Date().toString());
-			// new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '') // gives UTC; shorter
-			console.log("Buy attempt # %s", attemptCount);
-		}
-		setTimeout(buy, config.timeout);
-	}
-	else {
-		console.log("SUCCESS! Bought %s BTC!", config.qty);
-		// TODO: append "@ XYZ ea." to output
-	}
-};
- 
-// this works but is currently not user-accessible functionality
-function buy() {
-	// check the price until it reaches the desired value
-	rest.get(baseURL + 'prices/buy').on('complete', function(data){
-		console.log("Current price: " + data.amount + ". Buy-at price: " + config.threshold)
-
-		if(data.amount <= config.threshold) {
-			var jsonData = { qty: config.qty };
-			rest.postJson(baseURL + 'buys' + API_URL, jsonData).once('complete', onComplete);
-		}
-		else {
-			setTimeout(buy, config.timeout);
-		}
-		return
+	repl.start({
+		prompt: 'coinbassist> ',
+		eval : parseCmds
 	});
 }
 
-// buy();
+main();

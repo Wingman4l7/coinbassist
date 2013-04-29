@@ -1,5 +1,5 @@
-coinbase-bot
-============
+coinbassist
+===========
 
 ## About ##
 This is a node.js application which provides command-line access to [Coinbase]. You can:
@@ -34,7 +34,7 @@ I personally recommend disabling your API key when you're not using this applica
 ## How to Run ##
 For now, this is as simple as:
 
-	node coinbase-bot.js
+	node coinbassist.js
 
 ## How to Use ##
 
@@ -58,7 +58,9 @@ This is where you'll put the API key and set other options, like if you want log
 If you want to just buy BTC and don't care to use the threshold to buy under/at a certain price, just set the theshold config value high enough so it won't matter.  The "min" and "max" values in the config aren't currently used anywhere.
 
 ## Origins & Credit Due ##
-Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated threshold functionality from [FernandoEscher]'s [fork of same].  I used the JSON config file and REPL-as-command-line from [martindale]'s [coinbase-trader], and I'll probably be using other bits from it in the near future.  Lots of good stuff in [otakup0pe]'s [nodecoinbase] too, so there's probably going to be pieces from that in here as well, eventually.
+Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated threshold functionality from [FernandoEscher]'s [fork of same].  I used the JSON config file and REPL-as-command-line from [martindale]'s [coinbase-trader], and I'll probably be using other bits from it in the near future.
+
+Credit goes to [AlliedEnvy] for the clever name.
 
 ## License ##
 I haven't bothered to formally declare which license this is going to be under, but it's obviously open-source, and it will probably be some flavor of [Creative Commons], or maybe [GPL].
@@ -79,7 +81,6 @@ Like this script?  You can send Bitcoin donations to: `1F7kfMNUNQy8e52RHnQAWYXea
 [fork of same]: https://gist.github.com/FernandoEscher/5103601
 [martindale]: https://github.com/martindale
 [coinbase-trader]: https://github.com/martindale/coinbase-trader
-[otakup0pe]: https://github.com/otakup0pe
-[nodecoinbase]: https://github.com/otakup0pe/nodecoinbase
+[AlliedEnvy]: https://github.com/AlliedEnvy
 [Creative Commons]: http://creativecommons.org/licenses/
 [GPL]: http://www.gnu.org/licenses/licenses.html
