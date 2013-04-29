@@ -118,7 +118,7 @@ function sellPrice(args, callback) {
 		callback(response);
 	}
 	else {
-		var jsonData = { 'qty': qty };
+		var jsonData = { 'qty': args[1] };
 		rest.json(baseURL + 'prices/sell', jsonData).once('complete', function(data, res) {
 			if(typeof data.currency == "undefined") { // data.amount would return "NaN"
 				response = red + "SELL PRICE QUERY FAILED -- TRY AGAIN" + reset;
