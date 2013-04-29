@@ -75,16 +75,16 @@ function getAddy(callback) {
 function newAddy(callback) {
 	var response;
 	rest.post(baseURL + 'account/generate_receive_address' + API_URL).once('complete', function(data, res) {
-		if(typeof data.address == "undefined") {
+		if(typeof data.address == "undefined" || !data.success) {
 			response = red + "NEW ADDRESS REQUEST FAILED -- TRY AGAIN" + reset;
 		}
-		else {
+		if(data.success) {
 			response = cyan + "New Receiving Address: " + reset + data.address;	
 		}
 		callback(response);
 		writeToLog(response);
 	});
-}
+} 
 
 function buyPrice(args, callback) {
 	var response;
