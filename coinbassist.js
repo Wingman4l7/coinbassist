@@ -112,11 +112,11 @@ function buyPrice(args, callback) {
 function sellPrice(args, callback) {
 	var response;
 		if(typeof args[1] == "undefined" || isNaN(args[1])) {
-		response = red + "Please enter a quantity." + '\n' +
-				   cyan + "Example: " + reset + "sellprice " + yellow + "5" + reset;
-		writeToLog(response);
-		callback(response);
-	}
+			response = red + "Please enter a quantity." + '\n' +
+					   cyan + "Example: " + reset + "sellprice " + yellow + "5" + reset;
+			writeToLog(response);
+			callback(response);
+		}
 	else {
 		var jsonData = { 'qty': args[1] };
 		rest.json(baseURL + 'prices/sell', jsonData).once('complete', function(data, res) {
