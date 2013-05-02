@@ -25,7 +25,7 @@ function writeToLog(str) {
 		fs.appendFileSync(config.logfile, date + ": " + bareStr + '\n');
 	}
 }
-  
+
 // API supports other exchange rates but as Coinbase only 
 // currently does USD to BTC, no point in displaying them
 function getRate(callback) {
@@ -132,10 +132,58 @@ function sellPrice(args, callback) {
 	}
 }
 
+function transfer(args, callback) {
+	var response;
+	//make sure all the arguments required are there
+	if(typeof args[1] == "undefined" || isNaN(args[1]) || typeof args[2] == "undefined") {
+		response = red + "Please enter a quantity & an address." + '\n' +
+				   cyan + "Example: " + reset + "sendbtc " + yellow + "2.34" + 
+				   " a_BTC_OR_email_address" + reset + " [optional note]";
+		writeToLog(response);
+		callback(response);
+	}	
+	else {
+		// parse the optional TXN note
+		var note = "";
+		if(typeof args[3] != "undefined") {
+			note = args.slice(3).join(' ');
+		}
+		// populate the JSON block to be submitted
+		var jsonData = { "transaction": {
+							"to": args[2],
+							"amount": args[1],
+							"notes": note
+							}
+						}
+		// attempt to send request
+		rest.postJson(baseURL + 'transactions/send_money' + API_URL, jsonData).once('complete', function(data, res) {
+			if(typeof data.success == "undefined") { // POST failed
+				response = red + "TRANSER REQUEST FAILED -- TRY AGAIN" + reset;
+			}
+			if(!data.success && typeof data.success != "undefined") { // POST successful but TXN failed
+				response = red + "TRANSFER REQUEST FAILED -- ERRORS: " + reset + '\n' + data.errors.join('\n');
+			}
+			if(data.success) { // POST successful and  TXN creation successful
+				var TXN = data.transaction;
+				response =  cyan + "Transaction ID: " + reset + TXN.id         + '\n' +
+							cyan + "Creation Date: "  + reset + TXN.created_at + '\n' +
+							cyan + "Amount Sent: "    + reset + parseFloat(TXN.amount.amount) 
+													  + " " + TXN.amount.currency + '\n' +
+							cyan + "Status: "         + reset + TXN.status + '\n' +
+							cyan + "Recipient: "      + reset + TXN.recipient.name + " <" +  TXN.recipient.email + ">";
+							// POSSIBLE ERROR: what does TXN.recipient.name & TXN.recipient.email return when it's a BTC address? "undefined"?
+			}
+			callback(response);
+			writeToLog(response);
+		});
+	}
+}
+
 function unknownCMD(args, callback) {
-	writeToLog(red + 'unknown command: ' + reset + '"' + args[0] +'"');
-	  callback(red + 'unknown command: ' + reset + '"' + args[0] +'"' + '\n' +
-			   cyan + "Type '" + yellow + 'help' + cyan + "' for a complete list of commands." + reset);
+	var response = red + 'unknown command: ' + reset + '"' + args[0] +'"';
+	writeToLog(response); // no point in including below line in log
+	response +=  '\n' + cyan + "Type '" + yellow + 'help' + cyan + "' for a complete list of commands." + reset;
+	callback(response);
 }
  
 function exitMsg() {
@@ -149,8 +197,10 @@ function displayHelp(callback) {
 			'\n	' + yellow + "rate" + reset + ": shows their current exchange rate (BTC to USD)" + 
 			'\n	' + yellow + "getaddy" + reset + ": shows your current receive address" +
 			'\n	' + yellow + "newaddy" + reset + ": generates & displays a new receive address" + 
-			'\n	' + yellow + "buyprice"  + reset + ": shows buy price incl. fees (use: buyprice #)" + 
-			'\n	' + yellow + "sellprice" + reset + ": shows sell price incl. fees (use: sellprice #)" + 
+			'\n	' + yellow + "buyprice"  + reset + ": shows buy price incl. fees (use: buyprice <#>)" + 
+			'\n	' + yellow + "sellprice" + reset + ": shows sell price incl. fees (use: sellprice <#>)" +
+			'\n	' + yellow + "transfer" + reset + ": send BTC to an email or Bitcoin address" +
+			'\n' + "                  (use: transfer <amount> <address> <optional note>)" +		
 			'\n	' + yellow + "quit / exit" + reset + ": does what it says on the tin"
 	);
 }
@@ -162,9 +212,10 @@ function displayStart() {
 }
 
 function parseCmds(cmd, context, filename, callback) {
-	var tokens = cmd.toLowerCase().replace('(','').replace(')','').replace('\n', '').split(' ');
-		
-	switch (tokens[0]) {
+	var args = cmd.replace('(','').replace(')','').replace('\n', '').split(' ');
+	args[0] = args[0].toLowerCase(); // in case the user likes to do commands in all caps
+	
+	switch (args[0]) {
 		case 'help':
 			displayHelp(callback);
 		break;
@@ -185,20 +236,24 @@ function parseCmds(cmd, context, filename, callback) {
 			newAddy(callback);
 		break;
 		case 'buyprice':
-			writeToLog('buyprice ' + tokens[1]);
-			buyPrice(tokens, callback);
+			writeToLog('buyprice ' + args[1]);
+			buyPrice(args, callback);
 		break;
 		case 'sellprice':
-			writeToLog('sellprice ' + tokens[1]);
-			sellPrice(tokens, callback);
+			writeToLog('sellprice ' + args[1]);
+			sellPrice(args, callback);
+		break;
+		case 'transfer':
+			writeToLog('transfer ' + args);
+			transfer(args, callback);
 		break;
 		case 'quit': case 'exit':
 			writeToLog('==================== EXIT ====================');
 			exitMsg();
 		break;
 		default:
-			writeToLog(tokens[0]);
-			unknownCMD(tokens, callback);
+			writeToLog(args[0]);
+			unknownCMD(args, callback);
 		break;
 	}
 }
