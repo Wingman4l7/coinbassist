@@ -69,9 +69,9 @@ You are provided with a command prompt.  Current available commands are:
   - `newaddy`: generates & displays a new receive address
   - `buyprice`:  shows buy price incl. fees (use: `buyprice <# amount>`)
   - `sellprice`: shows sell price incl. fees (use: `sellprice <# amount>`)
-  - `status`:  shows the status of a transaction (use: `status <TXN_ID>`) +
+  - `status`:  shows the status of a transaction (use: `status <TXN_ID>`)
   - `transfer`: send BTC to an email or Bitcoin address (use: `transfer <# amount> <address> <optional note>`)
-  - `sell`: sells BTC (use: `sell <amount in BTC>`) +
+  - `sell`: sells BTC (use: `sell <amount in BTC>`)
   - `quit` / `exit`: does what it says on the tin
 
 There is currently **NO** command confirmation -- so be careful!
