@@ -4,7 +4,7 @@ coinbassist
 ## About ##
 This is a node.js application which provides command-line access to [Coinbase].
 
-**This is in beta!  Parts of this may not be fully tested!  *Caveat Utilitor!***
+**This is in beta!  Parts of this may not be fully tested!**  ***Caveat Utilitor!***
 
 ### Current Capabilities ###
 
@@ -14,20 +14,21 @@ This is a node.js application which provides command-line access to [Coinbase].
   - generate & display a new receive address
   - show buy or sell price (incl. fees) for a given amount of BTC
   - send BTC to an email or Bitcoin address
+  - sell BTC *(testing not completed)*
+  - check the status of a transaction *(testing not completed)*
 
 It will also optionally log all your actions to a text file.
 
 ### Coming Soon ###
 
   - command confirmations (i.e. *"Are you sure you want to do that?"*)
-  - automatic transfer of incoming funds to a designated account
-  - [automatic] sell command
+  - automatic transfer of incoming BTC to a designated external account
+  - automatic sell of incoming BTC
   - [automatic] buy command
   - support for price floor & ceiling in buy/sell orders
   - check your daily buy/sell limit & support for this limit in buy/sell commands
   - support for transferring / selling / buying in USD amounts
   - support for custom fee amounts
-  - checking the status of a transaction
   - listing / exporting your transaction and transfer histories
   - displaying / setting user info
   - requesting money from an email address
@@ -37,7 +38,7 @@ It will also optionally log all your actions to a text file.
 ## How to Install ##
 
 ### node.js & dependencies ###
-This needs [node.js] to work, so install that first.  This was tested & developed on v0.10.<i>x</i>.
+This needs [node.js] to work, so install that first; coinbassist was tested & developed on v0.10.<i>x</i> of node.js.
 
 Then, you will need to install the module dependencies.  Currently that is only [restler], *"an HTTP client library for node.js"*.  After installing node.js, run this command to do it:
 
@@ -68,7 +69,9 @@ You are provided with a command prompt.  Current available commands are:
   - `newaddy`: generates & displays a new receive address
   - `buyprice`:  shows buy price incl. fees (use: `buyprice <# amount>`)
   - `sellprice`: shows sell price incl. fees (use: `sellprice <# amount>`)
+  - `status`:  shows the status of a transaction (use: `status <TXN_ID>`) +
   - `transfer`: send BTC to an email or Bitcoin address (use: `transfer <# amount> <address> <optional note>`)
+  - `sell`: sells BTC (use: `sell <amount in BTC>`) +
   - `quit` / `exit`: does what it says on the tin
 
 There is currently **NO** command confirmation -- so be careful!
@@ -83,7 +86,8 @@ Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated threshold funct
 
 Credit goes to [AlliedEnvy] for the clever name.
 
-**Funny, really -- the only thing this can do is an automatic buy, which is one of the few things coinbassist can't currently do!  Blame the inclusion of the REPL for temporarily decomissioning that functionality.*
+*
+*Funny, really -- the only thing this can do is an automatic buy, which is one of the few things coinbassist can't currently do!  Blame the inclusion of the REPL for temporarily decomissioning that functionality.*
 
 ## License ##
 I haven't bothered to formally declare which license this is going to be under, but it's obviously open-source, and it will probably be some flavor of [Creative Commons], or maybe [GPL].

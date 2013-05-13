@@ -20,7 +20,8 @@ var red    = '\u001b[31m'
 
 function writeToLog(str) {
 	if(config.logging) {
-		var bareStr = str.replace(/\u001b\[[0-9;]*m/g, "");  // strip coloring characters from string
+		// WARNING: str.replace() errors on an undefined string!
+		var bareStr = str.replace(/\u001b\[[0-9;]*m/g, "");  // strip out coloring chars from string
 		var date = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''); // gives UTC
 		fs.appendFileSync(config.logfile, date + ": " + bareStr + '\n');
 	}
@@ -39,8 +40,8 @@ function getRate(callback) {
 			market.rates = data;
 			response = cyan + 'BTC to USD: ' + reset + market.rates.btc_to_usd;
 		}
-		callback(response);
 		writeToLog(response);
+		callback(response);
 	});
 }
  
@@ -53,8 +54,8 @@ function getBalance(callback) {
 		else { // parseFloat() chops off any trailing zeroes
 			response = cyan + "Account Balance: " + reset + parseFloat(data.amount) + " " + data.currency;
 		}
+		writeToLog(response);
 		callback(response);
-		writeToLog(response);		
 	});
 }
 
@@ -67,8 +68,8 @@ function getAddy(callback) {
 		if(data.success) {
 			response = cyan + "Current Receiving Address: " + reset + data.address;
 		}
-		callback(response);
 		writeToLog(response);
+		callback(response);
 	});
 }
 
@@ -81,8 +82,8 @@ function newAddy(callback) {
 		if(data.success) {
 			response = cyan + "New Receiving Address: " + reset + data.address;	
 		}
-		callback(response);
 		writeToLog(response);
+		callback(response);
 	});
 } 
 
@@ -103,8 +104,8 @@ function buyPrice(args, callback) {
 			else { 
 				response = cyan + "Buy Price: " + reset + data.amount + " " + data.currency;
 			}
-			callback(response);
 			writeToLog(response);
+			callback(response);
 		});
 	}
 }
@@ -126,8 +127,46 @@ function sellPrice(args, callback) {
 			else { 
 				response = cyan + "Sell Price: " + reset + data.amount + " " + data.currency;
 			}
-			callback(response);
 			writeToLog(response);
+			callback(response);
+		});
+	}
+}
+
+// THIS COMMENT WILL BE REMOVED WHEN TESTING HAS FINISHED
+function status(args, callback) {
+	var response;
+	//make sure all the arguments required are there
+	if(typeof args[1] == "undefined") {
+		response = red + "Please enter a transaction ID." + '\n' +
+				   cyan + "Example: " + reset + "status " + yellow + "5018f833f8182b129c00002f" + reset;
+		// that's the example transaction ID that the API uses
+		writeToLog(response);
+		callback(response);
+	}
+	else {
+		// attempt to send request
+		rest.get(baseURL + 'transactions/' + args[1] + API_URL).once('complete', function(data, res) {
+			if(typeof data.success == "undefined") { // POST failed
+				response = red + "TXN STATUS REQUEST FAILED -- TRY AGAIN" + reset;
+			}			
+			if(!data.success && typeof data.success != "undefined") { // POST successful but TXN failed
+				response = red + "TXN STATUS REQUEST FAILED -- ERRORS: " + reset + '\n' + data.errors.join('\n');
+			}
+			if(data.success) { // POST successful and  TXN creation successful
+				var TXN = data.transaction; // just to keep things neater
+				response =  cyan + "Transaction ID: " + reset + TXN.id + '\n' +
+							cyan + "Creation Date: "  + reset + TXN.created_at + '\n' +
+							cyan + "Amount: "         + reset + parseFloat(TXN.amount.amount)
+																   + " " + TXN.amount.currency + '\n' +
+							cyan + "Status: "         + reset + TXN.status + '\n' +
+							cyan + "Sender: "    + reset + TXN.sender.name + " (" + TXN.sender.email + ")" + '\n' +
+							cyan + "Recipient: " + reset + TXN.recipient.name + " (" + TXN.recipient.email + ")" + '\n' + 
+							// cyan + "Recipient: " + reset + TXN.recipient_address // maybe conditonally print this if it doesn't match email addy?
+							cyan + "Notes: "     + reset + TXN.notes;		
+			}
+			writeToLog(response);
+			callback(response);
 		});
 	}
 }
@@ -164,7 +203,7 @@ function transfer(args, callback) {
 				response = red + "TRANSFER REQUEST FAILED -- ERRORS: " + reset + '\n' + data.errors.join('\n');
 			}
 			if(data.success) { // POST successful and  TXN creation successful
-				var TXN = data.transaction;
+				var TXN = data.transaction; // just to keep things neater
 				response =  cyan + "Transaction ID: " + reset + TXN.id         + '\n' +
 							cyan + "Creation Date: "  + reset + TXN.created_at + '\n' +
 							cyan + "Amount Sent: "    + reset + parseFloat(TXN.amount.amount) 
@@ -173,8 +212,42 @@ function transfer(args, callback) {
 							cyan + "Recipient: "      + reset + TXN.recipient.name + " <" +  TXN.recipient.email + ">";
 							// POSSIBLE ERROR: what does TXN.recipient.name & TXN.recipient.email return when it's a BTC address? "undefined"?
 			}
-			callback(response);
 			writeToLog(response);
+			callback(response);
+		});
+	}
+}
+
+// THIS COMMENT WILL BE REMOVED WHEN TESTING HAS FINISHED
+function sell(args, callback) {
+	var response;
+	//make sure all the arguments required are there
+	if(typeof args[1] == "undefined" || isNaN(args[1]) {
+		response = red + "Please enter a quantity." + '\n' +
+				   cyan + "Example: " + reset + "sell " + yellow + "2.34" + reset;
+		writeToLog(response);
+		callback(response);
+	}
+	else {
+		var jsonData = { 'qty': args[1] };
+		// attempt to send request
+		rest.postJson(baseURL + 'sells' + API_URL, jsonData).once('complete', function(data, res) {
+			if(typeof data.success == "undefined") { // POST failed
+				response = red + "SELL-BTC REQUEST FAILED -- TRY AGAIN" + reset;
+			}
+			if(!data.success && typeof data.success != "undefined") { // POST successful but TXN failed
+				response = red + "SELL-BTC REQUEST FAILED -- ERRORS: " + reset + '\n' + data.errors.join('\n');
+			}
+			if(data.success) { // POST successful and  TXN creation successful
+				var TXN = data.transaction;
+				response =  cyan + "Confirmation Code: "   + reset + TXN.transfer.code + '\n' +
+							cyan + "Payout Date: "         + reset + TXN.payout_date   + '\n' +
+							cyan + "Quantity Sold: "       + reset + parseFloat(TXN.btc.amount) + " " + TXN.btc.currency + '\n' + 
+							cyan + "Amount (after fees): " + reset + TXN.total.amount + " " + TXN.total.currency;
+							// then, fetch / print remaining amount able to withdrawal under limit?  does API support this?
+			}
+			writeToLog(response);
+			callback(response);
 		});
 	}
 }
@@ -193,14 +266,16 @@ function exitMsg() {
 
 function displayHelp(callback) {
 	callback(cyan + 'Commands:' + reset +
-			'\n	' + yellow + "balance" + reset + ": shows your current account balance (in BTC)" + 
-			'\n	' + yellow + "rate" + reset + ": shows their current exchange rate (BTC to USD)" + 
-			'\n	' + yellow + "getaddy" + reset + ": shows your current receive address" +
-			'\n	' + yellow + "newaddy" + reset + ": generates & displays a new receive address" + 
-			'\n	' + yellow + "buyprice"  + reset + ": shows buy price incl. fees (use: buyprice <#>)" + 
+			'\n	' + yellow + "balance"   + reset + ": shows your current account balance (in BTC)" + 
+			'\n	' + yellow + "rate"      + reset + ": shows their current exchange rate (BTC to USD)" + 
+			'\n	' + yellow + "getaddy"   + reset + ": shows your current receive address" +
+			'\n	' + yellow + "newaddy"   + reset + ": generates & displays a new receive address" + 
+			'\n	' + yellow + "buyprice"  + reset + ": shows buy price incl. fees (use: buyprice <#>)" +
 			'\n	' + yellow + "sellprice" + reset + ": shows sell price incl. fees (use: sellprice <#>)" +
-			'\n	' + yellow + "transfer" + reset + ": send BTC to an email or Bitcoin address" +
-			'\n' + "                  (use: transfer <amount> <address> <optional note>)" +		
+			'\n	' + yellow + "status"    + reset + ": shows the status of a transaction (use: status <TXN_ID>)" +
+			'\n	' + yellow + "transfer"  + reset + ": send BTC to an email or Bitcoin address" +
+			'\n' + "                  (use: transfer <amount> <address> <optional note>)" +
+			'\n	' + yellow + "sell"      + reset + ": sells BTC (use: sell <amount in BTC>)" +
 			'\n	' + yellow + "quit / exit" + reset + ": does what it says on the tin"
 	);
 }
@@ -243,9 +318,19 @@ function parseCmds(cmd, context, filename, callback) {
 			writeToLog('sellprice ' + args[1]);
 			sellPrice(args, callback);
 		break;
+		case 'status':
+			writeToLog('status ' + args[1]);
+			status(args, callback);
+		break;
 		case 'transfer':
 			writeToLog('transfer ' + args);
+			// confirm(); // IMPLEMENT COMMAND CONFIRMATION
 			transfer(args, callback);
+		break;
+		case 'sell': 
+			writeToLog('sell ' + args[1]);
+			// confirm(); // IMPLEMENT COMMAND CONFIRMATION
+			sell(args, callback);
 		break;
 		case 'quit': case 'exit':
 			writeToLog('==================== EXIT ====================');
