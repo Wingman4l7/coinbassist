@@ -222,7 +222,7 @@ function transfer(args, callback) {
 function sell(args, callback) {
 	var response;
 	//make sure all the arguments required are there
-	if(typeof args[1] == "undefined" || isNaN(args[1]) {
+	if(typeof args[1] == "undefined" || isNaN(args[1])) {
 		response = red + "Please enter a quantity." + '\n' +
 				   cyan + "Example: " + reset + "sell " + yellow + "2.34" + reset;
 		writeToLog(response);
