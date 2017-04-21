@@ -86,7 +86,6 @@ Initially cloned from [chenosaurus]' [buy.js Gist]; incorporated threshold funct
 
 Credit goes to [AlliedEnvy] for the clever name.
 
-*
 *Funny, really -- the only thing this can do is an automatic buy, which is one of the few things coinbassist can't currently do!  Blame the inclusion of the REPL for temporarily decomissioning that functionality.*
 
 ## License ##
