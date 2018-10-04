@@ -94,8 +94,6 @@ I haven't bothered to formally declare which license this is going to be under, 
 ## Donations ##
 Like this script?  You can send Bitcoin donations to: `1F7kfMNUNQy8e52RHnQAWYXeaYfzFqHJAZ`
 
-Alternatively, you can use [Gittip](https://www.gittip.com/Wingman4l7/).
-
 [Bitcoin]: http://bitcoin.org/
 [Coinbase]: https://coinbase.com/
 [node.js]: http://nodejs.org/
